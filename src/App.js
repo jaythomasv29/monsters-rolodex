@@ -1,37 +1,52 @@
 import React, { Component } from "react";
 import "./App.css";
+import SearchBox from "./components/search-box/search-box.component";
+import CardList from "./components/card-list/card-list.component";
 
 class App extends Component {
   constructor() {
     super();
 
     this.state = {
-      monsters: []
+      monsters: [],
+      searchFieldValue: ''
     };
-    console.log('1', 'constructor runs 1st')
     
   }
 
   // lifecycle method ** WHEN IT FIRST RENDERS -> componentDidMount
   // ran whenever the component mounts
-  componentDidMount() {
-    console.log('I mounted')
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then(response => response.json())
-      .then(data => {
-        console.log(data)
-        this.setState({monsters: data})
-      })
+  async componentDidMount() {
+    // fetch('https://jsonplaceholder.typicode.com/users')
+      // .then(response => response.json())
+      // .then(data => this.setState({ monsters: data }))
+      const res = await fetch('https://jsonplaceholder.typicode.com/users')
+      const monsters = await res.json()
+      this.setState({ monsters})
+
   };
 
+  handleSearchChange(e) {
+    // set the searchField state to input value
+    const searchFieldValue = e.target.value.toLowerCase()
+    this.setState({ searchFieldValue })
+  }
+
   render() {
-    console.log('2', 'render method')
+    console.log('render from app');
+    const {monsters, searchFieldValue} = this.state
+    const filteredMonsters = monsters.filter(monster => (
+      monster.name.toLowerCase().includes(searchFieldValue)
+    ))
     return (
       <div>
-      {this.state.monsters.map((monster, idx) => (
-        <div key={monster.id}>
-          <h1>{monster.name}</h1>
-        </div>))}
+        <input 
+          onChange={ (event) => { this.handleSearchChange(event) } } 
+          className="search-box" type="search" placeholder="search monsters"
+        />
+        <SearchBox />
+        <CardList monsters={ filteredMonsters }/>
+     
       </div>
     );
   }
