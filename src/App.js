@@ -11,40 +11,42 @@ class App extends Component {
       monsters: [],
       searchFieldValue: ''
     };
+    // this.handleSearchChange = this.handleSearchChange.bind(this)
     
   }
 
   // lifecycle method ** WHEN IT FIRST RENDERS -> componentDidMount
   // ran whenever the component mounts
-  async componentDidMount() {
-    // fetch('https://jsonplaceholder.typicode.com/users')
-      // .then(response => response.json())
-      // .then(data => this.setState({ monsters: data }))
-      const res = await fetch('https://jsonplaceholder.typicode.com/users')
-      const monsters = await res.json()
-      this.setState({ monsters})
+  componentDidMount() {
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then(response => response.json())
+      .then(data => this.setState({ monsters: data }))
+      // const res = await fetch('https://jsonplaceholder.typicode.com/users')
+      // const monsters = await res.json()
+      // this.setState({ monsters})
 
   };
 
-  handleSearchChange(e) {
+  handleSearchChange = (event) => {
     // set the searchField state to input value
-    const searchFieldValue = e.target.value.toLowerCase()
-    this.setState({ searchFieldValue })
+    let searchFieldValue = event.target.value.toLocaleLowerCase()
+    console.log(searchFieldValue);
+    this.setState(() => {
+      return {searchFieldValue: searchFieldValue }
+    })
   }
 
   render() {
     console.log('render from app');
+    const {handleSearchChange} = this
     const {monsters, searchFieldValue} = this.state
     const filteredMonsters = monsters.filter(monster => (
-      monster.name.toLowerCase().includes(searchFieldValue)
+      monster.name.toLocaleLowerCase().includes(searchFieldValue)
     ))
     return (
       <div>
-        <input 
-          onChange={ (event) => { this.handleSearchChange(event) } } 
-          className="search-box" type="search" placeholder="search monsters"
-        />
-        <SearchBox />
+        <h1 className="app-title">Monster Phonebook</h1>
+        <SearchBox handleSearchChange={handleSearchChange} className='search-box' placeholder='Search Monsters'/>
         <CardList monsters={ filteredMonsters }/>
      
       </div>
